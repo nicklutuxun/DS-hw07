@@ -20,9 +20,9 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
    */
   public OpenAddressingHashMap() {
     this.numValid = 0;
-    this.capacity = 2;
+    this.capacity = 23;
     this.numFilled = 0;
-    this.primeIndex = 0;
+    this.primeIndex = 3;
     hashMap = (Element<K, V>[]) new Element[capacity];
   }
   
