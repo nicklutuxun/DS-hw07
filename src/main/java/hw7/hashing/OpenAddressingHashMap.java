@@ -46,7 +46,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       // Find next available position in the hashMap using probing strategy
       probing(k, v);
     }
-    
   }
   
   private void rehash() {
@@ -92,7 +91,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     }
     Element<K, V> element = containsKey(k);
     if (element == null) {
-      return null;
+      throw new IllegalArgumentException();
     }
     element.isTombStone = true;
     numValid--;
@@ -102,13 +101,22 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   @Override
   public void put(K k, V v) throws IllegalArgumentException {
     // TODO Implement Me!
+    if (k == null) {
+      throw new IllegalArgumentException();
+    }
+    
+    Element<K, V> element = containsKey(k);
+    if (element == null) {
+      throw new IllegalArgumentException();
+    }
+    element.value = v;
   }
 
   @Override
   public V get(K k) throws IllegalArgumentException {
     // TODO Implement Me!
     if (k == null) {
-      return null;
+      throw new IllegalArgumentException();
     }
     return containsKey(k).value;
   }
