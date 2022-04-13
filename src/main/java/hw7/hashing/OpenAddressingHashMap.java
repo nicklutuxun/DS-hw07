@@ -87,7 +87,16 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   @Override
   public V remove(K k) throws IllegalArgumentException {
     // TODO Implement Me!
-    return null;
+    if (k == null) {
+      throw new IllegalArgumentException();
+    }
+    Element<K, V> element = containsKey(k);
+    if (element == null) {
+      return null;
+    }
+    element.isTombStone = true;
+    numValid--;
+    return element.value;
   }
 
   @Override
