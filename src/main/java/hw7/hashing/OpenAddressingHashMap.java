@@ -151,7 +151,37 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   @Override
   public Iterator<K> iterator() {
     // TODO Implement Me!
-    return null;
+    return new OpenAddressingIterator();
+  }
+  
+  private class OpenAddressingIterator implements Iterator<K> {
+    int curValid;
+    int index;
+  
+    OpenAddressingIterator() {
+      this.curValid = 0;
+      this.index = 0;
+    }
+  
+    @Override
+    public boolean hasNext() {
+      return curValid < numValid;
+    }
+  
+    @Override
+    public K next() {
+      if (!hasNext()) {
+        return null;
+      }
+      while (true) {
+        if (hashMap[index] != null && !hashMap[index].isTombStone) {
+          curValid++;
+          K key = hashMap[index++].key;
+          return key;
+        }
+        index++;
+      }
+    }
   }
   
   private static class Element<K, V> {
