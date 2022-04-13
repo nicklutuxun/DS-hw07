@@ -10,12 +10,19 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   private int capacity;
   // number of total element (include Tombstones)
   private int numFilled;
+  private int primeIndex;
+  private int[] primes = {2, 5, 11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,
+      25717, 51437,102877, 205759, 411527, 823117, 1646237,3292489, 6584983, 13169977};
   private Element<K, V>[] hashMap;
   
+  /**
+   * Instantiate OpenAddressingHashMap.
+   */
   public OpenAddressingHashMap() {
     this.numValid = 0;
-    this.capacity = 29;
+    this.capacity = 2;
     this.numFilled = 0;
+    this.primeIndex = 0;
     hashMap = (Element<K, V>[]) new Element[capacity];
   }
   
@@ -24,6 +31,10 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     // TODO Implement Me!
     if (k == null || has(k)) {
       throw new IllegalArgumentException();
+    }
+    
+    if (getLoadFactor() > 0.75) {
+      rehash();
     }
     
     int index = getHash(k);
@@ -36,6 +47,29 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       probing(k, v);
     }
     
+  }
+  
+  private void rehash() {
+    this.numValid = 0;
+    this.numFilled = 0;
+    this.primeIndex++;
+    int oldCapacity = capacity;
+    this.capacity = primeIndex > primes.length ? this.capacity * 2 : primes[primeIndex];
+    // allocate new hashMap
+    Element<K, V>[] temp = hashMap;
+    this.hashMap = (Element<K, V>[]) new Element[capacity];
+    
+    // reinsert old hashMap entries
+    for (int i = 0; i < oldCapacity; i++) {
+      if (temp[i] != null && !temp[i].isTombStone) {
+        insert(temp[i].key, temp[i].value);
+      }
+    }
+    
+  }
+  
+  private double getLoadFactor() {
+    return (double)numFilled / capacity;
   }
   
   private int getHash(K k) {
@@ -64,6 +98,9 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   @Override
   public V get(K k) throws IllegalArgumentException {
     // TODO Implement Me!
+    if (k == null) {
+      return null;
+    }
     return containsKey(k).value;
   }
 
