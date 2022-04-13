@@ -11,7 +11,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   // number of total element (include Tombstones)
   private int numFilled;
   private int primeIndex;
-  private int[] primes = {2, 5, 11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,
+  private final int[] primes = {2, 5, 11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,
       25717, 51437,102877, 205759, 411527, 823117, 1646237,3292489, 6584983, 13169977};
   private Element<K, V>[] hashMap;
   
@@ -44,7 +44,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       numValid++;
     } else {
       // Find next available position in the hashMap using probing strategy
-      probing(k, v);
+      probing(k, v, index);
     }
   }
   
@@ -64,7 +64,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
         insert(temp[i].key, temp[i].value);
       }
     }
-    
   }
   
   private double getLoadFactor() {
@@ -75,8 +74,19 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     return k.hashCode() % capacity;
   }
   
-  private void probing(K k, V v) {
-  
+  private void probing(K k, V v, int start) {
+    for (int i = start; i < capacity; i++) {
+      if (hashMap[i] == null) {
+        hashMap[i] = new Element<>(k, v);
+        numFilled++;
+        numValid++;
+        break;
+      } else if (hashMap[i].isTombStone) {
+        hashMap[i] = new Element<>(k, v);
+        numValid++;
+        break;
+      }
+    }
   }
   
   private boolean isEmpty(int index) {
@@ -118,7 +128,11 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     if (k == null) {
       throw new IllegalArgumentException();
     }
-    return containsKey(k).value;
+    Element<K, V> element = containsKey(k);
+    if (element == null) {
+      throw new IllegalArgumentException();
+    }
+    return element.value;
   }
 
   @Override
@@ -176,8 +190,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       while (true) {
         if (hashMap[index] != null && !hashMap[index].isTombStone) {
           curValid++;
-          K key = hashMap[index++].key;
-          return key;
+          return hashMap[index++].key;
         }
         index++;
       }
