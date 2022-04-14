@@ -53,7 +53,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   private void rehash() {
     this.numFilled = 0;
     this.primeIndex++;
-    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1: primes[primeIndex];
+    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1 : primes[primeIndex];
     // allocate temp hashMap
     HashNode<K, V>[] temp = hashMap;
     this.hashMap = (HashNode<K, V>[]) new HashNode[capacity];
@@ -179,7 +179,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
     // index of current node in terms of total filled nodes
     int nodeIndex;
   
-    public ChainingIterator() {
+    ChainingIterator() {
       cur = hashMap[0];
       this.mapIndex = 0;
       this.nodeIndex = 0;
