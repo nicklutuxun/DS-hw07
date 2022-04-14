@@ -54,16 +54,14 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     this.numFilled = 0;
     this.primeIndex++;
     int oldCapacity = capacity;
-    this.capacity = primeIndex > primes.length ? this.capacity * 2 : primes[primeIndex];
-    // allocate new hashMap
+    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1: primes[primeIndex];
+    // allocate temp hashMap
     Element<K, V>[] temp = hashMap;
     this.hashMap = (Element<K, V>[]) new Element[capacity];
     
     // reinsert old hashMap entries
-    for (int i = 0; i < oldCapacity; i++) {
-      if (temp[i] != null && !temp[i].isTombStone) {
-        insert(temp[i].key, temp[i].value);
-      }
+    for (Element<K, V> node : temp) {
+      insert(node.key, node.value);
     }
   }
   
