@@ -2,6 +2,7 @@ package hw7.hashing;
 
 import hw7.Map;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   // number of valid element (exclude Tombstones)
@@ -139,7 +140,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   public boolean has(K k) {
     // TODO Implement Me!
     if (k == null) {
-      return false;
+      throw new IllegalArgumentException();
     }
     return containsKey(k) != null;
   }
@@ -185,7 +186,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     @Override
     public K next() {
       if (!hasNext()) {
-        return null;
+        throw new NoSuchElementException();
       }
       while (true) {
         if (hashMap[index] != null && !hashMap[index].isTombStone) {
