@@ -29,14 +29,13 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
       throw new IllegalArgumentException();
     }
   
-    if (getLoadFactor() > 0.75) {
+    if (getLoadFactor() > 0.4) {
       rehash();
     }
   
     int index = getHash(k);
     if (isEmpty(index)) {
       hashMap[index] = new HashNode<>(k, v);
-      numFilled++;
     } else {
       // insert into the linked list as head
       HashNode<K, V> newNode = new HashNode<>(k, v);
@@ -44,6 +43,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
       hashMap[index].prev = newNode;
       hashMap[index] = newNode;
     }
+    numFilled++;
   }
   
   private boolean isEmpty(int index) {
@@ -53,14 +53,19 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   private void rehash() {
     this.numFilled = 0;
     this.primeIndex++;
-    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1 : primes[primeIndex];
+    int oldCapacity = capacity;
+    this.capacity = primeIndex >= primes.length ? this.capacity * 2 + 1 : primes[primeIndex];
     // allocate temp hashMap
     HashNode<K, V>[] temp = hashMap;
     this.hashMap = (HashNode<K, V>[]) new HashNode[capacity];
     
     // reinsert old hashMap entries
-    for (HashNode<K, V> node : temp) {
-      insert(node.key, node.value);
+    for (int i = 0; i < oldCapacity; i++) {
+      HashNode<K, V> cur = temp[i];
+      while (cur != null) {
+        insert(cur.key, cur.value);
+        cur = cur.next;
+      }
     }
   }
   
@@ -157,7 +162,8 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   }
   
   private int getHash(K k) {
-    return k.hashCode() % capacity;
+    int index = k.hashCode() % capacity;
+    return index < 0 ? -1 * index : index;
   }
   
   @Override

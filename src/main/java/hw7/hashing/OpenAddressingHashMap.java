@@ -34,7 +34,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       throw new IllegalArgumentException();
     }
     
-    if (getLoadFactor() > 0.75) {
+    if (getLoadFactor() > 0.4) {
       rehash();
     }
     
@@ -42,26 +42,27 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     if (isEmpty(index)) {
       hashMap[index] = new Element<>(k, v);
       numFilled++;
-      numValid++;
     } else {
       // Find next available position in the hashMap using probing strategy
       probing(k, v, index);
     }
+    numValid++;
   }
   
   private void rehash() {
     this.numValid = 0;
     this.numFilled = 0;
     this.primeIndex++;
-    int oldCapacity = capacity;
-    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1: primes[primeIndex];
+    this.capacity = primeIndex >= primes.length ? this.capacity * 2 + 1 : primes[primeIndex];
     // allocate temp hashMap
     Element<K, V>[] temp = hashMap;
     this.hashMap = (Element<K, V>[]) new Element[capacity];
     
     // reinsert old hashMap entries
     for (Element<K, V> node : temp) {
-      insert(node.key, node.value);
+      if (node != null && !node.isTombStone) {
+        insert(node.key, node.value);
+      }
     }
   }
   
@@ -70,7 +71,8 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   }
   
   private int getHash(K k) {
-    return k.hashCode() % capacity;
+    int index = k.hashCode() % capacity;
+    return index < 0 ? -1 * index : index;
   }
   
   private void probing(K k, V v, int start) {
@@ -78,11 +80,9 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       if (hashMap[i] == null) {
         hashMap[i] = new Element<>(k, v);
         numFilled++;
-        numValid++;
         break;
       } else if (hashMap[i].isTombStone) {
         hashMap[i] = new Element<>(k, v);
-        numValid++;
         break;
       }
     }
@@ -138,7 +138,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   public boolean has(K k) {
     // TODO Implement Me!
     if (k == null) {
-      throw new IllegalArgumentException();
+      return false;
     }
     return containsKey(k) != null;
   }
