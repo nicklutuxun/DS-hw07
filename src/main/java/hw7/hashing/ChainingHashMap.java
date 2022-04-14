@@ -2,6 +2,7 @@ package hw7.hashing;
 
 import hw7.Map;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ChainingHashMap<K, V> implements Map<K, V> {
   private int capacity;
@@ -159,15 +160,37 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   }
   
   private class ChainingIterator implements Iterator<K> {
+    HashNode<K, V> cur;
+    // index in hashMap
+    int mapIndex;
+    // index of current node in terms of total filled nodes
+    int nodeIndex;
+  
+    public ChainingIterator() {
+      cur = hashMap[0];
+      this.mapIndex = 0;
+      this.nodeIndex = 0;
+    }
   
     @Override
     public boolean hasNext() {
-      return false;
+      return nodeIndex < numFilled;
     }
   
     @Override
     public K next() {
-      return null;
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      
+      while (cur == null) {
+        mapIndex++;
+        cur = hashMap[mapIndex];
+      }
+      K key = cur.key;
+      cur = cur.next;
+      nodeIndex++;
+      return key;
     }
   }
   
