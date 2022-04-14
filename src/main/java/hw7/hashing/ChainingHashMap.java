@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 public class ChainingHashMap<K, V> implements Map<K, V> {
   private int capacity;
   private int numFilled;
+  private int primeIndex;
   private HashNode<K, V>[] hashMap;
   private final int[] primes = {2, 5, 11, 23, 47, 97, 197, 397, 797, 1597, 3203, 6421, 12853,
       25717, 51437,102877, 205759, 411527, 823117, 1646237,3292489, 6584983, 13169977};
@@ -17,6 +18,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   public ChainingHashMap() {
     this.capacity = 23;
     this.numFilled = 0;
+    this.primeIndex = 3;
     this.hashMap = (HashNode<K, V>[]) new HashNode[capacity];
   }
 
@@ -49,6 +51,17 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   }
   
   private void rehash() {
+    this.numFilled = 0;
+    this.primeIndex++;
+    this.capacity = primeIndex > primes.length ? this.capacity * 2 + 1: primes[primeIndex];
+    // allocate temp hashMap
+    HashNode<K, V>[] temp = hashMap;
+    this.hashMap = (HashNode<K, V>[]) new HashNode[capacity];
+    
+    // reinsert old hashMap entries
+    for (HashNode<K, V> node : temp) {
+      insert(node.key, node.value);
+    }
   }
   
   private double getLoadFactor() {
