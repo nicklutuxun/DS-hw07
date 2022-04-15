@@ -33,7 +33,7 @@ public abstract class MapTest {
     assertTrue(map.has("key1"));
     assertEquals("value1", map.get("key1"));
   }
-
+  
   @Test
   public void insertMultipleElement() {
     map.insert("key1", "value1");
@@ -211,6 +211,23 @@ public abstract class MapTest {
     }
     assertEquals(3, counter);
   }
+  
+  @Test
+  public void iteratorMoreElements() {
+    for (int i = 0; i < 1000; i++) {
+      map.insert(String.valueOf(i), String.valueOf(i));
+      assertEquals(i+1, map.size());
+    }
+    assertEquals(1000, map.size());
+    for (int i = 500; i < 1000; i++) {
+      map.remove(String.valueOf(i));
+    }
+    assertEquals(500, map.size());
+    for (int i = 0; i < 500; i++) {
+      assertTrue(map.has(String.valueOf(i)));
+    }
+  }
+  
 
   // Ideally we should also check for "Keys must be immutable"
   // This is not trivial; check out
