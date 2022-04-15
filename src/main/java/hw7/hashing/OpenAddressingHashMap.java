@@ -44,7 +44,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       numFilled++;
     } else {
       // Find next available position in the hashMap using probing strategy
-      probing(k, v, index);
+      probing(k, v);
     }
     numValid++;
   }
@@ -72,17 +72,18 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   
   private int getHash(K k) {
     int index = k.hashCode() % capacity;
-    return index < 0 ? -1 * index : index;
+    return index < 0 ? -index : index;
   }
   
-  private void probing(K k, V v, int start) {
-    for (int i = start; i < capacity; i++) {
-      if (hashMap[i] == null) {
-        hashMap[i] = new Element<>(k, v);
+  private void probing(K k, V v) {
+    for (int i = 0; i < capacity; i++) {
+      int index = (getHash(k) + i) % capacity;
+      if (hashMap[index] == null) {
+        hashMap[index] = new Element<>(k, v);
         numFilled++;
         break;
-      } else if (hashMap[i].isTombStone) {
-        hashMap[i] = new Element<>(k, v);
+      } else if (hashMap[index].isTombStone) {
+        hashMap[index] = new Element<>(k, v);
         break;
       }
     }
@@ -113,7 +114,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
     if (k == null) {
       throw new IllegalArgumentException();
     }
-    
     Element<K, V> element = containsKey(k);
     if (element == null) {
       throw new IllegalArgumentException();
@@ -149,13 +149,14 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   }
   
   private Element<K, V> containsKey(K k) {
-    int index = getHash(k);
-    for (int i = index; i < capacity; i++) {
-      if (hashMap[i] == null) {
+    int start = getHash(k);
+    for (int i = 0; i < capacity; i++) {
+      int index = (start + i) % capacity;
+      if (hashMap[index] == null) {
         return null;
       }
-      if (hashMap[i].key.equals(k) && !hashMap[i].isTombStone) {
-        return hashMap[i];
+      if (hashMap[index].key.equals(k) && !hashMap[index].isTombStone) {
+        return hashMap[index];
       }
     }
     return null;

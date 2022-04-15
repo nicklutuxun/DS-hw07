@@ -163,7 +163,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   
   private int getHash(K k) {
     int index = k.hashCode() % capacity;
-    return index < 0 ? -1 * index : index;
+    return index < 0 ? -index : index;
   }
   
   @Override
