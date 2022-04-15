@@ -24,7 +24,6 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public void insert(K k, V v) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null || has(k)) {
       throw new IllegalArgumentException();
     }
@@ -75,7 +74,6 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   
   @Override
   public V remove(K k) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -116,7 +114,6 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   
   @Override
   public void put(K k, V v) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -129,7 +126,6 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public V get(K k) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -142,7 +138,6 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public boolean has(K k) {
-    // TODO Implement Me!
     if (k == null) {
       return false;
     }
@@ -163,18 +158,17 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
   
   private int getHash(K k) {
     int index = k.hashCode() % capacity;
+    // make sure no negative index
     return index < 0 ? -index : index;
   }
   
   @Override
   public int size() {
-    // TODO Implement Me!
     return numFilled;
   }
 
   @Override
   public Iterator<K> iterator() {
-    // TODO Implement Me!
     return new ChainingIterator();
   }
   
@@ -203,6 +197,7 @@ public class ChainingHashMap<K, V> implements Map<K, V> {
       }
       
       while (cur == null) {
+        // move to next hashMap cell
         mapIndex++;
         cur = hashMap[mapIndex];
       }

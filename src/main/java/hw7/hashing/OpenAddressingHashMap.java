@@ -29,7 +29,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   
   @Override
   public void insert(K k, V v) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null || has(k)) {
       throw new IllegalArgumentException();
     }
@@ -43,7 +42,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       hashMap[index] = new Element<>(k, v);
       numFilled++;
     } else {
-      // Find next available position in the hashMap using probing strategy
+      // Find next available position in the hashMap using linear probing strategy
       probing(k, v);
     }
     numValid++;
@@ -77,6 +76,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   
   private void probing(K k, V v) {
     for (int i = 0; i < capacity; i++) {
+      // find an empty cell start from current hash index
       int index = (getHash(k) + i) % capacity;
       if (hashMap[index] == null) {
         hashMap[index] = new Element<>(k, v);
@@ -95,7 +95,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   
   @Override
   public V remove(K k) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -110,7 +109,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public void put(K k, V v) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -123,7 +121,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public V get(K k) throws IllegalArgumentException {
-    // TODO Implement Me!
     if (k == null) {
       throw new IllegalArgumentException();
     }
@@ -136,7 +133,6 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public boolean has(K k) {
-    // TODO Implement Me!
     if (k == null) {
       return false;
     }
@@ -151,6 +147,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
   private Element<K, V> containsKey(K k) {
     int start = getHash(k);
     for (int i = 0; i < capacity; i++) {
+      // start searching from hash index
       int index = (start + i) % capacity;
       if (hashMap[index] == null) {
         return null;
@@ -164,12 +161,13 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public Iterator<K> iterator() {
-    // TODO Implement Me!
     return new OpenAddressingIterator();
   }
   
   private class OpenAddressingIterator implements Iterator<K> {
+    // number of valid elements visited
     int curValid;
+    // index of hashMap
     int index;
   
     OpenAddressingIterator() {
@@ -189,6 +187,7 @@ public class OpenAddressingHashMap<K, V> implements Map<K, V> {
       }
       while (true) {
         if (hashMap[index] != null && !hashMap[index].isTombStone) {
+          //
           curValid++;
           return hashMap[index++].key;
         }
