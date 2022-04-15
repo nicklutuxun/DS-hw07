@@ -1,6 +1,9 @@
 package hw7;
 
+import hw7.hashing.ChainingHashMap;
 import hw7.hashing.JdkHashMap;
+import hw7.hashing.OpenAddressingHashMap;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
@@ -18,7 +21,7 @@ public class Config {
    */
   public static Map getMap() {
     // Update this to any other implementation of Map for benchmarking experiments.
-    return new JdkHashMap();
+    return new ChainingHashMap();
   }
 
   /**
